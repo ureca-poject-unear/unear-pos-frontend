@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNEAR POS - 메인</title>
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <div class="pos-container">
+        <!-- 헤더 -->
+        <header class="pos-header">
+            <h1>UNEAR POS</h1>
+            <div class="header-actions">
+                <span id="currentTime"></span>
+                <div class="store-info-dropdown">
+                    <button class="store-info-btn" id="storeInfoBtn">
+                        <span id="storeInfoText">매장 정보</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <button class="dropdown-item" id="storeDetailBtn">매장 정보 조회</button>
+                        <button class="dropdown-item" id="logoutBtn">로그아웃</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 메인 컨텐츠 -->
+        <div class="pos-content">
+            <!-- 상품 선택 영역 -->
+            <div class="product-section">
+                <div class="category-filters">
+                    <button class="category-btn active" data-category="all">전체</button>
+                    <button class="category-btn" data-category="coffee">커피</button>
+                    <button class="category-btn" data-category="beverage">음료</button>
+                    <button class="category-btn" data-category="dessert">디저트</button>
+                    <button class="category-btn" data-category="food">푸드</button>
+                </div>
+                <div class="product-grid" id="productGrid">
+                    <!-- 상품들이 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+
+            <!-- 주문 내역 영역 -->
+            <div class="order-section">
+                <h2>주문 내역</h2>
+                <div class="order-list" id="orderList">
+                    <div class="empty-order">
+                        <p>선택된 상품이 없습니다</p>
+                    </div>
+                </div>
+                
+                <div class="order-summary">
+                    <div class="total-amount">
+                        <span>총 금액: </span>
+                        <span id="totalAmount">0원</span>
+                    </div>
+                    <button class="payment-btn" id="paymentBtn" disabled>결제하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 매장 정보 모달 -->
+    <div class="modal-overlay" id="storeModalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>매장 정보</h3>
+                <button class="modal-close" id="modalCloseBtn">×</button>
+            </div>
+            <div class="modal-content" id="storeModalContent">
+                <!-- 매장 정보가 여기에 표시됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNEAR POS - 결제</title>
+    <link rel="stylesheet" href="../css/payment.css">
+</head>
+<body>
+    <div class="payment-container">
+        <header class="payment-header">
+            <button class="back-btn" id="backBtn">← 돌아가기</button>
+            <h1>결제하기</h1>
+            <div></div>
+        </header>
+
+        <div class="payment-content">
+            <!-- 주문 요약 (왼쪽) -->
+            <div class="order-summary-section">
+                <h2>주문 내역</h2>
+                <div class="order-items" id="orderItems">
+                    <!-- 주문 항목들 -->
+                </div>
+                <div class="total-section">
+                    <div class="total-row">
+                        <span>총 금액</span>
+                        <span id="totalAmount">0원</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 결제 및 할인 (오른쪽) -->
+            <div class="payment-actions-section">
+                <!-- 결제 방법 선택 -->
+                <div class="payment-method-section">
+                    <h2>결제 방법</h2>
+                    <div class="payment-methods">
+                        <button class="payment-method-btn active" data-method="CARD">
+                            카드 결제
+                        </button>
+                        <button class="payment-method-btn" data-method="CASH">
+                            현금 결제
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 멤버십/쿠폰 할인 -->
+                <div class="discount-section">
+                    <!-- 1. 멤버십 인증 (필수) -->
+                    <div class="discount-subsection">
+                        <h3 class="section-title">
+                            <span class="section-number">1</span>
+                            멤버십 인증 (필수)
+                        </h3>
+                        
+                        <!-- 인증 방법 선택 -->
+                        <div class="auth-method-selection">
+                            <button class="auth-method-btn active" data-type="barcode">바코드</button>
+                            <button class="auth-method-btn" data-type="phone">휴대폰 번호</button>
+                        </div>
+                        
+                        <!-- 인증 입력 -->
+                        <div class="membership-input-section">
+                            <div class="input-with-button">
+                                <input type="text" id="membershipInput" placeholder="바코드를 입력하세요" />
+                                <button class="verify-btn" id="memberVerifyBtn">확인</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 2. 멤버십 할인 적용 (선택) -->
+                    <div class="discount-subsection">
+                        <h3 class="section-title">
+                            <span class="section-number">2</span>
+                            멤버십 할인 적용 (선택)
+                        </h3>
+                        
+                        <!-- Step 1: 기본 상태 -->
+                        <div class="membership-step" id="membershipStep1">
+                            <div class="no-auth-message" id="noAuthMessage">
+                                <p>멤버십 인증을 먼저 진행해주세요</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 2: 인증 후 할인 정책 선택 -->
+                        <div class="membership-step" id="membershipStep2" style="display: none;">
+                            <div class="member-info" id="memberInfo"></div>
+                            <h4>적용 가능한 할인</h4>
+                            <div class="policy-list" id="policyList"></div>
+                            <div class="modal-actions">
+                                <button class="cancel-btn" id="memberCancelBtn">취소</button>
+                                <button class="apply-btn" id="memberApplyBtn" disabled>적용</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 3. 쿠폰 할인 적용 (선택) -->
+                    <div class="discount-subsection">
+                        <h3 class="section-title">
+                            <span class="section-number">3</span>
+                            쿠폰 할인 적용 (선택)
+                        </h3>
+                        
+                        <div class="coupon-input-section">
+                            <div class="input-with-button">
+                                <input type="text" id="couponCode" placeholder="쿠폰 코드 입력" />
+                                <button class="verify-btn" id="couponVerifyBtn">적용</button>
+                            </div>
+                        </div>
+                        
+                        <div class="coupon-help-text">
+                            <p>유효한 쿠폰 코드를 입력하세요</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 적용된 할인 목록 -->
+                    <div class="applied-discounts" id="appliedDiscounts">
+                        <!-- 적용된 할인 표시 -->
+                    </div>
+                </div>
+
+                <!-- 최종 결제 버튼 -->
+                <div class="final-payment-section">
+                    <button class="final-payment-btn" id="finalPaymentBtn">
+                        <span id="finalAmount">0원</span> 결제하기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="../js/config.js"></script>
+    <script src="../js/payment.js"></script>
+</body>
+</html>
