@@ -556,3 +556,35 @@
 
         orderItems.appendChild(discountItem);
     }
+
+
+    async function applyVerifiedCoupon() {
+        if (!verifiedUserCouponId) {
+            alert('쿠폰 확인을 먼저 해주세요.');
+            return;
+        }
+
+        const applyResult = await apiCall(API_CONFIG.ENDPOINTS.COUPON_APPLY, {
+            method: 'POST',
+            body: JSON.stringify({ userCouponId: verifiedUserCouponId })
+        });
+
+        if (applyResult.success) {
+            const { discountAmount, finalAmount } = applyResult.data;
+
+            appliedDiscounts.push({
+                type: 'coupon',
+                name: '쿠폰 할인',
+                amount: discountAmount
+            });
+
+            updateTotalAmount();
+
+            document.getElementById('couponDropdown').classList.remove('active');
+            document.getElementById('couponCode').value = '';
+            document.getElementById('couponHelpText').innerHTML = '';
+            document.getElementById('couponApplyBtn').disabled = true;
+        } else {
+            alert(applyResult.message || '쿠폰 적용에 실패했습니다.');
+        }
+    }
