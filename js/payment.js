@@ -181,6 +181,12 @@
             couponVerifyBtn.addEventListener('click', verifyCoupon);
         }
 
+        // ✅ 쿠폰 적용 버튼
+        const couponApplyBtn = document.getElementById('couponApplyBtn');
+        if (couponApplyBtn) {
+            couponApplyBtn.addEventListener('click', applyCoupon);
+        }
+
         // 최종 결제 버튼
         const finalPaymentBtn = document.getElementById('finalPaymentBtn');
         if (finalPaymentBtn) {
@@ -404,49 +410,69 @@
         });
 
         if (result.success && result.data.userCouponId) {
-            // ✅ 검증된 userCouponId 저장 후 applyCoupon 호출
             verifiedUserCouponId = result.data.userCouponId;
 
-            const applyResult = await apiCall(API_CONFIG.ENDPOINTS.COUPON_APPLY, {
-                method: 'POST',
-                body: JSON.stringify({ userCouponId: verifiedUserCouponId })
-            });
+            // ✅ 쿠폰 정보 보여주기
+            const discountInfoText = `${result.data.discountAmount.toLocaleString()}원 할인 쿠폰입니다`;
+            document.getElementById('couponHelpText').textContent = discountInfoText;
 
-            if (applyResult.success) {
-                const { discountAmount, finalAmount } = applyResult.data;
-
-                appliedDiscounts.push({
-                    type: 'coupon',
-                    name: '쿠폰 할인',
-                    amount: discountAmount
-                });
-
-                appendDiscountToOrder('쿠폰 할인', discountAmount, 'couponDiscountItem');
-                updateTotalAmount();
-                document.getElementById('couponDropdown').classList.remove('active');
-                document.getElementById('couponCode').value = '';
-            } else {
-                alert(applyResult.message || '쿠폰 할인 적용에 실패했습니다.');
-            }
+            // ✅ 적용 버튼 활성화
+            document.getElementById('couponApplyBtn').disabled = false;
         } else {
             alert(result.message || '쿠폰 확인에 실패했습니다.');
         }
     }
 
-    // 할인 제거
-    function removeDiscount(index) {
-        const discount = appliedDiscounts[index];
-        
-        // API 호출로 할인 취소
-        if (discount.type === 'membership') {
-            apiCall(API_CONFIG.ENDPOINTS.MEMBER_CANCEL, { method: 'POST' });
-        } else if (discount.type === 'coupon') {
-            apiCall(API_CONFIG.ENDPOINTS.COUPON_CANCEL, { method: 'POST' });
+    async function applyCoupon() {
+        if (!verifiedUserCouponId) {
+            alert('쿠폰을 먼저 확인해주세요.');
+            return;
         }
-        
-        appliedDiscounts.splice(index, 1);
-        updateTotalAmount();
+
+        const applyResult = await apiCall(API_CONFIG.ENDPOINTS.COUPON_APPLY, {
+            method: 'POST',
+            body: JSON.stringify({ userCouponId: verifiedUserCouponId })
+        });
+
+        if (applyResult.success) {
+            const { discountAmount, finalAmount } = applyResult.data;
+
+            appliedDiscounts.push({
+                type: 'coupon',
+                name: '쿠폰 할인',
+                amount: discountAmount
+            });
+
+            appendDiscountToOrder(
+                '쿠폰 할인',
+                discountAmount,
+                'couponDiscountItem',
+                async () => {
+                    // ✅ 삭제 버튼 클릭 시 동작
+                    await apiCall(API_CONFIG.ENDPOINTS.COUPON_CANCEL, { method: 'POST' });
+
+                    // 상태 초기화
+                    appliedDiscounts = appliedDiscounts.filter(d => d.type !== 'coupon');
+                    document.getElementById('couponDiscountItem')?.remove();
+                    updateTotalAmount();
+                    document.getElementById('couponApplyBtn').disabled = true;
+                    verifiedUserCouponId = null;
+                    document.getElementById('couponCode').value = '';
+                }
+            );
+            updateTotalAmount();
+
+            // UI 초기화
+            document.getElementById('couponDropdown').classList.remove('active');
+            document.getElementById('couponCode').value = '';
+            document.getElementById('couponApplyBtn').disabled = true;
+            document.getElementById('couponHelpText').textContent = '';
+            verifiedUserCouponId = null;
+        } else {
+            alert(applyResult.message || '쿠폰 할인 적용에 실패했습니다.');
+        }
     }
+
 
     // 결제 처리
     async function processPayment() {
@@ -495,10 +521,10 @@
     totalAmountEl.textContent = `${finalAmount.toLocaleString()}원`;
     }
 
-    function appendDiscountToOrder(name, amount, id) {
+    function appendDiscountToOrder(name, amount, id, onRemove) {
         const orderItems = document.getElementById('orderItems');
 
-        // 기존 할인 항목 제거 (중복 방지)
+        // 기존 항목 제거 (중복 방지)
         const existingEl = document.getElementById(id);
         if (existingEl) existingEl.remove();
 
@@ -509,6 +535,11 @@
         discountItem.innerHTML = `
             <span>${name}</span>
             <span style="color: red;">-${amount.toLocaleString()}원</span>
+            <button class="discount-remove" style="margin-left: 10px;">삭제</button>
         `;
+
+        const removeBtn = discountItem.querySelector('.discount-remove');
+        removeBtn.addEventListener('click', onRemove);
+
         orderItems.appendChild(discountItem);
     }
