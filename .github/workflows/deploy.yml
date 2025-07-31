@@ -22,8 +22,4 @@ jobs:
           
       - name: Deploy to S3
         run: |
-          aws s3 sync . s3://your-bucket-name --delete --exclude ".git/*" --exclude ".github/*"
-          
-      - name: Invalidate CloudFront
-        run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws s3 sync . s3://unear-pos-front --delete --exclude ".git/*" --exclude ".github/*"
