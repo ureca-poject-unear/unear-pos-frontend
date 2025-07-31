@@ -240,7 +240,6 @@
         `;
     }
 
-    // 할인 정책 리스트 표시
     function displayDiscountPolicies(policies) {
         const policyListContainer = document.getElementById('policyList');
         
@@ -262,8 +261,10 @@
                 discountText = `${policy.fixedDiscount.toLocaleString()}원 할인`;
             } else if (policy.discountPercent) {
                 discountText = `${policy.discountPercent}% 할인`;
+            } else if (policy.unitBaseAmount) {
+                discountText = `1000원 당 ${policy.unitBaseAmount.toLocaleString()}원 할인`;  // ✅ 추가
             }
-            
+
             let conditionText = '';
             if (policy.minPurchaseAmount) {
                 conditionText += `${policy.minPurchaseAmount.toLocaleString()}원 이상 구매시`;
@@ -278,16 +279,13 @@
             `;
             
             policyItem.addEventListener('click', function() {
-                // 다른 정책 선택 해제
                 document.querySelectorAll('.policy-item').forEach(item => {
                     item.classList.remove('selected');
                 });
                 
-                // 현재 정책 선택
                 this.classList.add('selected');
                 selectedPolicy = policy;
                 
-                // 적용 버튼 활성화
                 const applyBtn = document.getElementById('memberApplyBtn');
                 if (applyBtn) {
                     applyBtn.disabled = false;
