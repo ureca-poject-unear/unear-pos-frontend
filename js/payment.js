@@ -412,16 +412,29 @@
         if (result.success && result.data.userCouponId) {
             verifiedUserCouponId = result.data.userCouponId;
 
-            // ✅ 쿠폰 정보 보여주기
-            const discountInfoText = `${result.data.discountAmount.toLocaleString()}원 할인 쿠폰입니다`;
-            document.getElementById('couponHelpText').textContent = discountInfoText;
+            const coupon = result.data;
+            let description = '';
 
-            // ✅ 적용 버튼 활성화
+            if (coupon.discountCode === 'COUPON_FIXED') {
+                description += `${coupon.fixedDiscount.toLocaleString()}원 정액 할인 쿠폰`;
+            } else if (coupon.discountCode === 'COUPON_PERCENT') {
+                description += `${coupon.discountPercent}% 정률 할인 쿠폰`;
+
+                if (coupon.maxDiscountAmount) {
+                    description += ` (최대 ${coupon.maxDiscountAmount.toLocaleString()}원 할인)`;
+                }
+            }
+
+            if (coupon.minPurchaseAmount) {
+                description += `\n${coupon.minPurchaseAmount.toLocaleString()}원 이상 구매 시 사용 가능`;
+            }
+
+            document.getElementById('couponHelpText').innerHTML = description.replace(/\n/g, '<br>');
             document.getElementById('couponApplyBtn').disabled = false;
         } else {
-            alert(result.message || '쿠폰 확인에 실패했습니다.');
-        }
-    }
+                    alert(result.message || '쿠폰 확인에 실패했습니다.');
+                }
+            }
 
     async function applyCoupon() {
         if (!verifiedUserCouponId) {
