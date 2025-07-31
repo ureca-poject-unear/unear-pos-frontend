@@ -131,9 +131,42 @@
         // 멤버십 취소/적용 버튼
         const memberCancelBtn = document.getElementById('memberCancelBtn');
         if (memberCancelBtn) {
-            memberCancelBtn.addEventListener('click', function() {
-                const dropdown = document.getElementById('membershipDropdown');
-                if (dropdown) dropdown.classList.remove('active');
+            memberCancelBtn.addEventListener('click', async function () {
+                try {
+                    // 1. 멤버십 할인 취소 API 호출
+                    const res = await apiCall(API_CONFIG.ENDPOINTS.MEMBER_CANCEL, {
+                        method: 'POST'
+                    });
+
+                    if (res.success) {
+                        // 2. 할인 목록에서 멤버십 제거
+                        appliedDiscounts = appliedDiscounts.filter(d => d.type !== 'membership');
+
+                        // 3. 주문 내역에서 멤버십 할인 항목 제거
+                        document.getElementById('membershipDiscountItem')?.remove();
+
+                        // 4. 적용 버튼 다시 활성화
+                        document.getElementById('memberApplyBtn').disabled = false;
+
+                        // 5. 금액 다시 계산
+                        updateTotalAmount();
+
+                        // 6. 선택 상태 초기화
+                        selectedPolicy = null;
+
+                        // 7. Step 1로 되돌리기
+                        document.getElementById('membershipStep1').style.display = 'block';
+                        document.getElementById('membershipStep2').style.display = 'none';
+
+                        // 8. 입력창 초기화
+                        document.getElementById('membershipInput').value = '';
+                    } else {
+                        alert(res.message || '멤버십 할인 취소 실패');
+                    }
+                } catch (e) {
+                    console.error('멤버십 취소 실패:', e);
+                    alert('멤버십 할인 취소 중 오류 발생');
+                }
             });
         }
 
@@ -388,6 +421,7 @@
                     amount: discountAmount
                 });
 
+                appendDiscountToOrder('쿠폰 할인', discountAmount, 'couponDiscountItem');
                 updateTotalAmount();
                 document.getElementById('couponDropdown').classList.remove('active');
                 document.getElementById('couponCode').value = '';
@@ -459,4 +493,22 @@
 
     // 총 금액 업데이트
     totalAmountEl.textContent = `${finalAmount.toLocaleString()}원`;
+    }
+
+    function appendDiscountToOrder(name, amount, id) {
+        const orderItems = document.getElementById('orderItems');
+
+        // 기존 할인 항목 제거 (중복 방지)
+        const existingEl = document.getElementById(id);
+        if (existingEl) existingEl.remove();
+
+        const discountItem = document.createElement('div');
+        discountItem.className = 'order-item';
+        discountItem.id = id;
+
+        discountItem.innerHTML = `
+            <span>${name}</span>
+            <span style="color: red;">-${amount.toLocaleString()}원</span>
+        `;
+        orderItems.appendChild(discountItem);
     }
