@@ -322,9 +322,9 @@
                 discountPolicyId: selectedPolicy.id
             });
 
-            renderAppliedDiscounts();
             applyMembershipDiscountToOrder(discountAmount, finalAmount);
             updateTotalAmount();
+            document.getElementById('memberApplyBtn').disabled = true;
             document.getElementById('membershipDropdown').classList.remove('active');
         } else {
             alert(applyResult.message || '멤버십 할인 적용에 실패했습니다.');
@@ -388,7 +388,6 @@
                     amount: discountAmount
                 });
 
-                renderAppliedDiscounts();
                 updateTotalAmount();
                 document.getElementById('couponDropdown').classList.remove('active');
                 document.getElementById('couponCode').value = '';
@@ -398,29 +397,6 @@
         } else {
             alert(result.message || '쿠폰 확인에 실패했습니다.');
         }
-    }
-
-    // 적용된 할인 렌더링
-    function renderAppliedDiscounts() {
-        const appliedDiscountsContainer = document.getElementById('appliedDiscounts');
-        if (!appliedDiscountsContainer) return;
-        
-        appliedDiscountsContainer.innerHTML = '';
-
-        appliedDiscounts.forEach((discount, index) => {
-            const discountItem = document.createElement('div');
-            discountItem.className = 'discount-item';
-            
-            discountItem.innerHTML = `
-                <div class="discount-info">
-                    <div class="discount-name">${discount.name}</div>
-                    <div class="discount-amount">-${discount.amount.toLocaleString()}원</div>
-                </div>
-                <button class="discount-remove" onclick="removeDiscount(${index})">삭제</button>
-            `;
-            
-            appliedDiscountsContainer.appendChild(discountItem);
-        });
     }
 
     // 할인 제거
@@ -435,7 +411,6 @@
         }
         
         appliedDiscounts.splice(index, 1);
-        renderAppliedDiscounts();
         updateTotalAmount();
     }
 
