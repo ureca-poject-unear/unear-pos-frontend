@@ -311,15 +311,16 @@
         });
 
         if (applyResult.success) {
-            const discountAmount = calculateDiscount(selectedPolicy, orderData.totalAmount);
-            
+            const discountAmount = applyResult.data.discountAmount;   // ✅ 서버 계산값 사용
+            const finalAmount = applyResult.data.finalAmount;
+
             appliedDiscounts.push({
                 type: 'membership',
                 name: `멤버십 할인 (${currentMemberInfo.memberGrade})`,
                 amount: discountAmount,
                 discountPolicyId: selectedPolicy.id
             });
-            
+
             renderAppliedDiscounts();
             applyMembershipDiscountToOrder(discountAmount, finalAmount);
             updateTotalAmount();
