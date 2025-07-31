@@ -87,7 +87,8 @@
         const discountAmount = appliedDiscounts.reduce((sum, discount) => sum + discount.amount, 0);
         const finalAmount = originalTotal - discountAmount;
 
-        document.getElementById('totalAmount').textContent = `${originalTotal.toLocaleString()}원`;
+        // ✅ 총 금액에도 최종 금액 반영
+        document.getElementById('totalAmount').textContent = `${finalAmount.toLocaleString()}원`;
         document.getElementById('finalAmount').textContent = `${finalAmount.toLocaleString()}원`;
     }
 
