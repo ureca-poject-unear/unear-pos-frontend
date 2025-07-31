@@ -321,6 +321,7 @@
             });
             
             renderAppliedDiscounts();
+            applyMembershipDiscountToOrder(discountAmount, finalAmount);
             updateTotalAmount();
             document.getElementById('membershipDropdown').classList.remove('active');
         } else {
@@ -456,4 +457,29 @@
         } else {
             alert(result.message || '결제에 실패했습니다.');
         }
+    }
+
+
+    function applyMembershipDiscountToOrder(discountAmount, finalAmount) {
+    const orderItems = document.getElementById('orderItems');
+    const totalAmountEl = document.getElementById('totalAmount');
+
+    // 기존 할인 항목 제거 (중복 방지)
+    const existingDiscountEl = document.getElementById('membershipDiscountItem');
+    if (existingDiscountEl) {
+        existingDiscountEl.remove();
+    }
+
+    // 할인 항목 추가
+    const discountItem = document.createElement('div');
+    discountItem.className = 'order-item';
+    discountItem.id = 'membershipDiscountItem';
+    discountItem.innerHTML = `
+        <span>멤버십 할인</span>
+        <span style="color: red;">-${discountAmount.toLocaleString()}원</span>
+    `;
+    orderItems.appendChild(discountItem);
+
+    // 총 금액 업데이트
+    totalAmountEl.textContent = `${finalAmount.toLocaleString()}원`;
     }
