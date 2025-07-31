@@ -91,3 +91,16 @@ const apiCall = async (endpoint, options = {}) => {
         };
     }
 };
+
+// 로그아웃
+export const logout = async () => {
+    const res = await apiCall(API_CONFIG.ENDPOINTS.LOGOUT, {
+        method: 'POST'
+    });
+
+    if (res.success) {
+        SessionManager.clear();
+    }
+
+    return res;
+};

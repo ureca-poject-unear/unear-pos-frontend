@@ -196,14 +196,16 @@ function setupEventListeners() {
     
     // 로그아웃 버튼
     document.getElementById('logoutBtn').addEventListener('click', async function() {
-        const result = await apiCall(API_CONFIG.ENDPOINTS.LOGOUT, {
-            method: 'POST'
-        });
-        
-        SessionManager.clear();
-        alert('로그아웃되었습니다.');
+        const result = await logout();
+    
+        if (result.success) {
+            alert('로그아웃되었습니다.');
+        } else {
+            alert('로그아웃 실패: ' + result.message);
+        }
+
         window.location.href = '../index.html';
-    });
+});
     
     // 모달 닫기
     document.getElementById('modalCloseBtn').addEventListener('click', hideStoreModal);
